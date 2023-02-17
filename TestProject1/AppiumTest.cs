@@ -8,20 +8,19 @@ using System;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Html5;
-using Location = OpenQA.Selenium.Appium.Location;
+
 using OpenQA.Selenium.Appium.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Location = OpenQA.Selenium.Appium.Location;
 
 namespace TestProject1
-{
-    [TestFixture]
+{ 
     public class Tests
     {
-       
-        private static AndroidDriver<AppiumWebElement> _driver;
+        private static AppiumDriver<AppiumWebElement> _driver;
         private static AppiumLocalService _appiumLocalService;
-        
-        [ClassInitialize]
+
+        [Test]
         public void OpenAppium()
         {
             _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
@@ -29,40 +28,23 @@ namespace TestProject1
             var driverOptions = new AppiumOptions();
             driverOptions.AddAdditionalCapability(MobileCapabilityType.PlatformName, "Android");
             driverOptions.AddAdditionalCapability(MobileCapabilityType.DeviceName, "Pixel XL API 31");
-            driverOptions.AddAdditionalCapability(MobileCapabilityType.App, @"D:\Dipisha\Projects\2023\Geico - Telematices\Extra\APK\android-debug.apk");
+            // driverOptions.AddAdditionalCapability(MobileCapabilityType.App, @"D:\Dipisha\Projects\2023\Geico - Telematices\Extra\APK\android-debug.apk");
+            driverOptions.AddAdditionalCapability("appPackage", "com.google.android.apps.maps");
 
+            driverOptions.AddAdditionalCapability("appActivity", "com.google.android.maps.MapsActivity");
             _driver = new AndroidDriver<AppiumWebElement>(_appiumLocalService, driverOptions);
-            _driver.CloseApp();
+             Location location = new Location();
+            _driver.Location.Altitude = 77.59974003;
+            _driver.Location.Latitude = 12.91024781;
+            _driver.Location.Longitude = 909;
 
-            // AndroidDriver<AndroidElement> androiddriver = new AndroidDriver<AndroidElement>(driverOptions);
-            // _driver = new AndroidDriver<AndroidElement>(new Uri("http://127.0.0.1:4723/wd/hub"), driverOptions);
-            //  _driver.FindElementByXPath("//android.view.View[@content-desc=\"Account\"]/android.widget.TextView").Click();
-            Location loc = new Location();
-           // Location location = new Location(77.59974003, 12.91024781, 909);
-            // _driver.Location.Latitude = 94.23;
-            loc.Latitude = 94.23;
-            // _driver.Location.Latitude = 121.21;
-            loc.Altitude = 121.21;
-            // _driver.Location.Longitude = 11.56;
-            loc.Longitude = 11.56;
-            // Location location = new Location();
-           // _driver.g (loc);
-           // driver.setGeoLocation({ latitude: "121.21", longitude: "11.56"});
+
+
         }
-        [TestInitialize]
-        public void TestInitialize()
+        [TearDown]
+        public void close_Browser()
         {
-            _driver?.LaunchApp();
-        }
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            _driver?.CloseApp();
-        }
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            _appiumLocalService.Dispose();
+            _driver.CloseApp();
         }
     }
 }
